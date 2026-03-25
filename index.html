@@ -350,7 +350,8 @@ function saveConfig() {
   localStorage.setItem('mqtt_config', JSON.stringify({
     host: document.getElementById('mqttHost').value,
     user: document.getElementById('mqttUser').value,
-    pass: document.getElementById('mqttPass').value
+    pass: document.getElementById('mqttPass').value,
+    otaUrl: document.getElementById('otaUrl').value
   }));
 }
 function loadConfig() {
@@ -360,6 +361,7 @@ function loadConfig() {
       document.getElementById('mqttHost').value = c.host || '';
       document.getElementById('mqttUser').value = c.user || '';
       document.getElementById('mqttPass').value = c.pass || '';
+      document.getElementById('otaUrl').value = c.otaUrl || '';
     }
   } catch(e) {}
 }
@@ -504,6 +506,7 @@ function triggerOTA() {
   var url = document.getElementById('otaUrl').value.trim();
   if (!url) { alert('Please enter a firmware URL'); return; }
   if (!confirm('Update ESP32 firmware from:\\n' + url + '\\n\\nThe device will reboot after update.')) return;
+  saveConfig();
   document.getElementById('otaStatus').textContent = 'Sending update command...';
   send('ota:' + url);
 }
