@@ -235,6 +235,10 @@ function loadConfig() {
   } catch(e) {}
 }
 loadConfig();
+// Auto-connect if credentials are saved
+if (document.getElementById('mqttHost').value && document.getElementById('mqttUser').value && document.getElementById('mqttPass').value) {
+  setTimeout(connectMQTT, 100);
+}
 
 function connectMQTT() {
   var host = document.getElementById('mqttHost').value.trim();
