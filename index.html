@@ -254,6 +254,17 @@ input[type=text]:focus{border-color:#4a8ad4}
       <button class="btn btn-sm" style="background:#3a2020" onclick="disconnect()">Disconnect</button>
     </div>
 
+    <!-- REMOTE OTA -->
+    <div class="card">
+      <h2><span class="icon">&#128268;</span> Firmware Update</h2>
+      <input type="text" id="otaUrl" placeholder="Firmware .bin URL" style="font-size:.75em">
+      <button class="btn btn-full" style="background:#7b3f00" onclick="triggerOTA()">UPDATE FIRMWARE</button>
+      <div id="otaStatus" class="sub"></div>
+      <div class="sub" style="margin-top:4px;font-size:.6em;color:#3a5a7a">
+        Paste a URL to a .bin file (e.g. GitHub Release asset)
+      </div>
+    </div>
+
     <!-- LOG -->
     <div class="card">
       <h2 style="cursor:pointer" onclick="document.getElementById('logPanel').classList.toggle('hidden')">
@@ -400,6 +411,11 @@ function connectMQTT() {
     if (d.startsWith('display:')) {
       var parts = d.substring(8).split(':');
       updateDisplay(parts[0], parts.slice(1).join(':'));
+      // Update OTA status panel if it's an OTA message
+      if (parts[0] === 'OTA') {
+        var el = document.getElementById('otaStatus');
+        if (el) el.textContent = parts.slice(1).join(':');
+      }
     }
     if (d.startsWith('params:')) addLog('System', d.substring(7));
     if (d.startsWith('score:')) {
@@ -483,6 +499,13 @@ function startGame(cmd) {
   document.getElementById('game-section').style.display = 'block';
   document.getElementById('score').textContent = cmd.includes('auto') ? 'Autoplay' : 'Score: 0';
   send(cmd);
+}
+function triggerOTA() {
+  var url = document.getElementById('otaUrl').value.trim();
+  if (!url) { alert('Please enter a firmware URL'); return; }
+  if (!confirm('Update ESP32 firmware from:\\n' + url + '\\n\\nThe device will reboot after update.')) return;
+  document.getElementById('otaStatus').textContent = 'Sending update command...';
+  send('ota:' + url);
 }
 document.addEventListener('keydown', function(ev) {
   var m = {ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right'};
