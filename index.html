@@ -23,6 +23,13 @@ body{background:#0a1628;color:#e0e6f0;font-family:-apple-system,BlinkMacSystemFo
 .status-bar .mode{font-size:.8em;color:#7eb8ff;font-weight:600}
 .status-bar .content{font-size:.72em;color:#8a9ab5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* LED Matrix Preview */
+.led-preview{background:#0a0a0a;border-radius:10px;padding:12px 16px;margin-bottom:10px;
+  max-width:900px;margin-left:auto;margin-right:auto;text-align:center;
+  border:1px solid #1a1a1a;position:relative;overflow:hidden}
+.led-preview canvas{display:block;margin:0 auto;image-rendering:pixelated}
+.led-label{font-size:.6em;color:#333;text-transform:uppercase;letter-spacing:1px;margin-top:6px}
+
 /* Grid layout */
 .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-width:900px;margin:0 auto}
 @media(max-width:700px){.grid{grid-template-columns:1fr 1fr}}
@@ -123,6 +130,12 @@ input[type=text]:focus{border-color:#4a8ad4}
     <div class="dot dot-on" id="connDot"></div>
     <span class="mode" id="curMode">--</span>
     <span class="content" id="curContent"></span>
+  </div>
+
+  <!-- Live LED Matrix Preview -->
+  <div class="led-preview">
+    <canvas id="ledCanvas" width="320" height="80"></canvas>
+    <div class="led-label">Live Display</div>
   </div>
 
   <!-- Main grid -->
@@ -264,6 +277,62 @@ var client = null;
 var TOPIC_CMD = 'esp32/led/cmd';
 var TOPIC_STATUS = 'esp32/led/status';
 
+// LED matrix renderer
+var ledCanvas = document.getElementById('ledCanvas');
+var ledCtx = ledCanvas.getContext('2d');
+var LED_COLS = 32, LED_ROWS = 8, LED_SIZE = 9, LED_GAP = 1;
+ledCanvas.width = LED_COLS * (LED_SIZE + LED_GAP) + LED_GAP;
+ledCanvas.height = LED_ROWS * (LED_SIZE + LED_GAP) + LED_GAP;
+
+function reverseBits(b) {
+  b = ((b & 0xF0) >> 4) | ((b & 0x0F) << 4);
+  b = ((b & 0xCC) >> 2) | ((b & 0x33) << 2);
+  b = ((b & 0xAA) >> 1) | ((b & 0x55) << 1);
+  return b;
+}
+
+function renderLED(hexData, brightness) {
+  var intensity = 0.15 + (brightness / 15) * 0.85; // 0.15 to 1.0
+  var r = Math.round(255 * intensity);
+  var g = Math.round(20 * intensity);
+  var b = Math.round(10 * intensity);
+  var onColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+  var glowR = Math.round(255 * intensity * 0.3);
+  var glowColor = 'rgba(' + r + ',' + g + ',' + b + ',0.4)';
+  var offColor = '#1a0a0a';
+
+  ledCtx.fillStyle = '#050505';
+  ledCtx.fillRect(0, 0, ledCanvas.width, ledCanvas.height);
+
+  for (var row = 0; row < LED_ROWS; row++) {
+    for (var panel = 0; panel < 4; panel++) {
+      var hexIdx = (row * 4 + panel) * 2;
+      var byteVal = parseInt(hexData.substr(hexIdx, 2), 16);
+      var bits = reverseBits(byteVal);
+      for (var col = 0; col < 8; col++) {
+        var on = (bits >> col) & 1;
+        var x = (panel * 8 + col) * (LED_SIZE + LED_GAP) + LED_GAP;
+        var y = row * (LED_SIZE + LED_GAP) + LED_GAP;
+
+        if (on) {
+          // Glow effect
+          ledCtx.shadowBlur = 6;
+          ledCtx.shadowColor = glowColor;
+          ledCtx.fillStyle = onColor;
+        } else {
+          ledCtx.shadowBlur = 0;
+          ledCtx.shadowColor = 'transparent';
+          ledCtx.fillStyle = offColor;
+        }
+        ledCtx.beginPath();
+        ledCtx.roundRect(x, y, LED_SIZE, LED_SIZE, 2);
+        ledCtx.fill();
+      }
+    }
+  }
+  ledCtx.shadowBlur = 0;
+}
+
 function saveConfig() {
   localStorage.setItem('mqtt_config', JSON.stringify({
     host: document.getElementById('mqttHost').value,
@@ -342,6 +411,16 @@ function connectMQTT() {
     if (d.startsWith('flight:')) {
       var fi = document.getElementById('flightInfo');
       fi.style.display = 'block'; fi.textContent = d.substring(7);
+    }
+    if (d.startsWith('px:')) {
+      var parts = d.split(':');
+      var br = parseInt(parts[1]);
+      var hex = parts[2];
+      if (hex && hex.length === 64) {
+        renderLED(hex, br);
+        document.getElementById('bright').value = br;
+        document.getElementById('brightVal').textContent = br;
+      }
     }
     if (d.startsWith('scrollstate:'))
       document.getElementById('scrollChk').checked = d.split(':')[1] === '1';
