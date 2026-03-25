@@ -394,6 +394,11 @@ function connectMQTT() {
     document.getElementById('connDot').className = 'dot dot-on';
     document.getElementById('configPanel').classList.add('hidden');
     document.getElementById('controls').classList.remove('hidden');
+    // Restore OTA URL now that controls are visible
+    try {
+      var c = JSON.parse(localStorage.getItem('mqtt_config'));
+      if (c && c.otaUrl) document.getElementById('otaUrl').value = c.otaUrl;
+    } catch(e) {}
     client.subscribe(TOPIC_STATUS);
     addLog('System', 'Connected');
   });
