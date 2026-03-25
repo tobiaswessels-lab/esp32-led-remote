@@ -8,110 +8,102 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#0a1628;color:#e0e6f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:16px}
-h1{font-size:1.3em;margin-bottom:4px;color:#7eb8ff;letter-spacing:1px}
-.subtitle{font-size:.7em;color:#4a6a8a;margin-bottom:14px}
+  min-height:100vh;padding:12px}
 
-/* Main container */
-.main{width:100%;max-width:420px}
+/* Header */
+.header{text-align:center;margin-bottom:10px}
+.header h1{font-size:1.2em;color:#7eb8ff;letter-spacing:1px;margin-bottom:2px}
+.header .sub{font-size:.65em;color:#4a6a8a}
 
 /* Status bar */
-.status-bar{background:#111d33;border-radius:10px;padding:10px 14px;margin-bottom:12px;
-  display:flex;align-items:center;justify-content:space-between}
-.status-bar .dot{width:8px;height:8px;border-radius:50%;margin-right:8px;flex-shrink:0}
+.status-bar{background:#111d33;border-radius:8px;padding:8px 12px;margin-bottom:10px;
+  display:flex;align-items:center;gap:8px;max-width:900px;margin-left:auto;margin-right:auto}
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .dot-on{background:#2ecc71;box-shadow:0 0 6px #2ecc71}.dot-off{background:#555}
-.status-bar .mode{font-size:.85em;color:#7eb8ff;font-weight:600}
-.status-bar .content{font-size:.75em;color:#8a9ab5;margin-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.status-left{display:flex;align-items:center;min-width:0;flex:1}
+.status-bar .mode{font-size:.8em;color:#7eb8ff;font-weight:600}
+.status-bar .content{font-size:.72em;color:#8a9ab5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* Navigation tabs */
-.nav{display:flex;gap:3px;margin-bottom:12px;background:#0d1a2e;border-radius:10px;padding:3px;overflow-x:auto}
-.nav-btn{flex:1;padding:10px 6px;border-radius:8px;background:transparent;color:#5a7a9a;font-size:.72em;
-  cursor:pointer;border:none;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;
-  transition:all .15s}
-.nav-btn.active{background:#1a5fb4;color:#fff}
-.nav-btn:hover:not(.active){background:#1a2a44;color:#8ab}
-
-/* Panels */
-.panel{display:none}.panel.active{display:block}
+/* Grid layout */
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;max-width:900px;margin:0 auto}
+@media(max-width:700px){.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.grid{grid-template-columns:1fr}}
 
 /* Cards */
-.s{background:#111d33;border-radius:12px;padding:14px;margin-bottom:10px}
-.s h2{font-size:.8em;color:#5a8abf;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
-
-/* Inputs */
-input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #2a3a55;
-  background:#0d1a2e;color:#e0e6f0;font-size:1em;outline:none;margin-bottom:6px}
-input[type=text]:focus{border-color:#4a8ad4}
+.card{background:#111d33;border-radius:10px;padding:12px}
+.card h2{font-size:.72em;color:#5a8abf;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;
+  display:flex;align-items:center;gap:6px}
+.card h2 .icon{font-size:1.1em}
 
 /* Buttons */
-.btn{display:inline-block;padding:10px 16px;border-radius:8px;border:none;font-size:.9em;
-  cursor:pointer;font-weight:600;transition:all .15s;color:#fff;margin:3px;text-align:center}
+.btn{display:inline-block;padding:8px 12px;border-radius:7px;border:none;font-size:.8em;
+  cursor:pointer;font-weight:600;transition:all .12s;color:#fff;text-align:center}
 .btn:active{transform:scale(.96)}
 .btn-p{background:#1a5fb4}.btn-p:hover{background:#2670c8}
-.btn-big{width:100%;padding:14px;font-size:1.05em;margin:4px 0}
-.btn-pre{background:#2a3a55;padding:8px 12px;font-size:.85em}.btn-pre:hover{background:#3a4e70}
-.presets{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.btn-full{width:100%;padding:10px;margin:3px 0}
+.btn-sm{padding:6px 10px;font-size:.75em;background:#2a3a55}.btn-sm:hover{background:#3a4e70}
 
-/* Effect buttons grid */
-.fx-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.fx-grid .btn{width:100%;padding:12px 8px;font-size:.8em;margin:0;border-radius:10px}
+/* Mini grid for effect/game buttons */
+.btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.btn-grid .btn{padding:10px 6px;font-size:.72em;margin:0;border-radius:8px}
+
+/* Inputs */
+input[type=text]{width:100%;padding:8px;border-radius:7px;border:1px solid #2a3a55;
+  background:#0d1a2e;color:#e0e6f0;font-size:.9em;outline:none;margin-bottom:5px}
+input[type=text]:focus{border-color:#4a8ad4}
 
 /* Sliders */
-.slider-row{display:flex;align-items:center;gap:8px;margin:6px 0}
-.slider-row label{font-size:.8em;color:#8a9ab5;min-width:40px}
-.slider-row input[type=range]{flex:1;accent-color:#4a8ad4;height:6px}
-.slider-row .val{font-size:.8em;color:#7eb8ff;min-width:30px;text-align:right}
+.slider-row{display:flex;align-items:center;gap:6px;margin:4px 0}
+.slider-row label{font-size:.7em;color:#8a9ab5;min-width:32px}
+.slider-row input[type=range]{flex:1;accent-color:#4a8ad4;height:5px}
+.slider-row .val{font-size:.75em;color:#7eb8ff;min-width:20px;text-align:right}
 
-/* Checkboxes & rows */
-.row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.85em;color:#8a9ab5}
-.row label{display:flex;align-items:center;gap:5px;cursor:pointer}
-.row input[type=checkbox]{accent-color:#4a8ad4;width:16px;height:16px}
+/* Checkboxes */
+.row{display:flex;align-items:center;gap:6px;margin:4px 0;font-size:.8em;color:#8a9ab5}
+.row label{display:flex;align-items:center;gap:4px;cursor:pointer}
+.row input[type=checkbox]{accent-color:#4a8ad4;width:14px;height:14px}
 
-/* Date tabs */
-.tabs{display:flex;gap:4px;margin-bottom:8px}
-.tab{padding:8px 12px;border-radius:6px;background:#1a2a44;color:#6a8abf;font-size:.8em;
+/* Presets row */
+.presets{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+
+/* Date format tabs */
+.tabs{display:flex;gap:3px;margin-bottom:6px}
+.tab{padding:6px 10px;border-radius:5px;background:#1a2a44;color:#6a8abf;font-size:.72em;
   cursor:pointer;border:1px solid transparent;font-weight:600}
 .tab.active{background:#1a5fb4;color:#fff;border-color:#2670c8}
 
 /* Game controls */
-.arrow-pad{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);
-  gap:4px;justify-content:center;margin:10px auto}
-.arrow-pad .btn{width:60px;height:60px;font-size:1.5em;padding:0;display:flex;align-items:center;
-  justify-content:center;background:#1a3355;border-radius:10px}
+.arrow-pad{display:grid;grid-template-columns:repeat(3,46px);grid-template-rows:repeat(3,46px);
+  gap:3px;justify-content:center;margin:8px auto}
+.arrow-pad .btn{width:46px;height:46px;font-size:1.3em;padding:0;display:flex;align-items:center;
+  justify-content:center;background:#1a3355;border-radius:8px}
 .arrow-pad .btn:hover{background:#254a75}
 .arrow-pad .btn:active{background:#3668a0}
 .empty{visibility:hidden}
-#score{font-size:1em;color:#7eb8ff;text-align:center;margin:6px 0;min-height:1.3em}
-
-/* Game launcher buttons */
-.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.game-grid .btn{width:100%;margin:0;padding:12px 8px;font-size:.82em;border-radius:10px}
+#score{font-size:.85em;color:#7eb8ff;text-align:center;margin:4px 0;min-height:1.2em}
 
 /* Log */
-.sub{font-size:.75em;color:#5a7a9a;margin-top:4px}
+.sub{font-size:.7em;color:#5a7a9a;margin-top:3px}
 .hidden{display:none}
 
-/* Status footer */
-.conn-status{font-size:.7em;color:#4a6a8a;text-align:center;margin-top:10px}
+/* Footer */
+.conn-status{font-size:.65em;color:#4a6a8a;text-align:center;margin-top:10px}
 
-/* MQTT config panel */
-.config{background:#0d1a2e;border:1px solid #2a3a55;border-radius:12px;padding:14px;margin-bottom:12px;width:100%;max-width:420px}
+/* MQTT config */
+.config{background:#0d1a2e;border:1px solid #2a3a55;border-radius:12px;padding:14px;margin:0 auto 12px;width:100%;max-width:400px}
 .config h2{font-size:.85em;color:#5a8abf;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
 .config input{width:100%;padding:8px;border-radius:6px;border:1px solid #2a3a55;
   background:#111d33;color:#e0e6f0;font-size:.85em;outline:none;margin-bottom:6px}
 .config input:focus{border-color:#4a8ad4}
 .config .hint{font-size:.7em;color:#4a6a8a;margin-bottom:4px}
-
-/* Settings disconnect */
-.disconnect-row{display:flex;justify-content:center;margin-top:10px}
-.disconnect-row .btn{background:#3a2020;font-size:.8em;padding:8px 20px}
-.disconnect-row .btn:hover{background:#5a2020}
+.config .btn-full{font-size:.95em;padding:12px}
 </style>
 </head>
 <body>
-<h1>LED Matrix Control</h1>
-<div class="subtitle">REMOTE</div>
+
+<div class="header">
+  <h1>LED Matrix Control</h1>
+  <div class="sub">REMOTE</div>
+</div>
 
 <!-- MQTT Connection Config -->
 <div class="config" id="configPanel">
@@ -120,74 +112,54 @@ input[type=text]:focus{border-color:#4a8ad4}
   <input type="text" id="mqttHost" placeholder="e.g. abc123.s1.eu.hivemq.cloud" value="">
   <input type="text" id="mqttUser" placeholder="Username">
   <input type="text" id="mqttPass" placeholder="Password" type="password">
-  <button class="btn btn-p btn-big" onclick="connectMQTT()">Connect</button>
+  <button class="btn btn-p btn-full" onclick="connectMQTT()">Connect</button>
   <div class="hint" style="margin-top:6px">Settings are saved in your browser.</div>
 </div>
 
-<div id="controls" class="hidden" style="width:100%;max-width:420px">
+<div id="controls" class="hidden">
 
-  <!-- Live status bar -->
+  <!-- Status bar -->
   <div class="status-bar">
-    <div class="status-left">
-      <div class="dot dot-on" id="connDot"></div>
-      <span class="mode" id="curMode">--</span>
-      <span class="content" id="curContent"></span>
-    </div>
+    <div class="dot dot-on" id="connDot"></div>
+    <span class="mode" id="curMode">--</span>
+    <span class="content" id="curContent"></span>
   </div>
 
-  <!-- Navigation -->
-  <div class="nav">
-    <button class="nav-btn active" onclick="showPanel('display')">Display</button>
-    <button class="nav-btn" onclick="showPanel('clock')">Clock</button>
-    <button class="nav-btn" onclick="showPanel('effects')">Effects</button>
-    <button class="nav-btn" onclick="showPanel('games')">Games</button>
-    <button class="nav-btn" onclick="showPanel('settings')">Settings</button>
-  </div>
+  <!-- Main grid -->
+  <div class="grid">
 
-  <!-- ==================== DISPLAY PANEL ==================== -->
-  <div class="panel active" id="panel-display">
-    <div class="s">
-      <h2>Text</h2>
-      <input type="text" id="textIn" placeholder="Type a word or phrase... (< = heart)" maxlength="40">
-      <button class="btn btn-p btn-big" onclick="sendText()">Send Text</button>
+    <!-- TEXT & NUMBER -->
+    <div class="card">
+      <h2><span class="icon">Aa</span> Display</h2>
+      <input type="text" id="textIn" placeholder="Text (< = heart)" maxlength="40">
+      <button class="btn btn-p btn-full" onclick="sendText()">Send Text</button>
       <div class="row">
         <label><input type="checkbox" id="scrollChk" onchange="toggleScroll()"> Scroll</label>
       </div>
       <div class="presets">
-        <button class="btn btn-pre" onclick="tp('HELLO')">HELLO</button>
-        <button class="btn btn-pre" onclick="tp('ESP32')">ESP32</button>
-        <button class="btn btn-pre" onclick="tp('COOL')">COOL</button>
-        <button class="btn btn-pre" onclick="tp('HI THERE')">HI THERE</button>
-        <button class="btn btn-pre" onclick="tp('I < U')">I &hearts; U</button>
-        <button class="btn btn-pre" onclick="tp('~')">GHOST</button>
-        <button class="btn btn-pre" onclick="tp('~ ~ ~')">GHOSTS</button>
+        <button class="btn btn-sm" onclick="tp('HELLO')">HELLO</button>
+        <button class="btn btn-sm" onclick="tp('I < U')">I&hearts;U</button>
+        <button class="btn btn-sm" onclick="tp('~')">GHOST</button>
+        <button class="btn btn-sm" onclick="tp('~ ~ ~')">GHOSTS</button>
       </div>
-    </div>
-
-    <div class="s">
-      <h2>Number</h2>
-      <input type="text" id="numIn" placeholder="Up to 4 digits" maxlength="4"
+      <div style="height:8px"></div>
+      <input type="text" id="numIn" placeholder="Number (max 4 digits)" maxlength="4"
         oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-      <button class="btn btn-p btn-big" onclick="sendNum()">Send Number</button>
+      <button class="btn btn-p btn-full" onclick="sendNum()">Send Number</button>
       <div class="presets">
-        <button class="btn btn-pre" onclick="np('42')">42</button>
-        <button class="btn btn-pre" onclick="np('1337')">1337</button>
-        <button class="btn btn-pre" onclick="np('2026')">2026</button>
+        <button class="btn btn-sm" onclick="np('42')">42</button>
+        <button class="btn btn-sm" onclick="np('1337')">1337</button>
+        <button class="btn btn-sm" onclick="np('2026')">2026</button>
       </div>
     </div>
-  </div>
 
-  <!-- ==================== CLOCK PANEL ==================== -->
-  <div class="panel" id="panel-clock">
-    <div class="s">
-      <h2>Time</h2>
-      <button class="btn btn-big" style="background:#0f7b3d" onclick="send('time')">SHOW TIME</button>
-      <button class="btn btn-big" style="background:#0f6b7b" onclick="send('timetemp')">TIME + MAX TEMP</button>
-    </div>
-
-    <div class="s">
-      <h2>Date</h2>
-      <div class="sub" style="margin-bottom:8px">Format:</div>
+    <!-- TIME & DATE -->
+    <div class="card">
+      <h2><span class="icon">&#9201;</span> Time &amp; Date</h2>
+      <button class="btn btn-full" style="background:#0f7b3d" onclick="send('time')">TIME</button>
+      <button class="btn btn-full" style="background:#0f6b7b" onclick="send('timetemp')">TIME + TEMP</button>
+      <div style="height:6px"></div>
+      <div class="sub" style="margin-bottom:4px">Date format:</div>
       <div class="tabs">
         <div class="tab active" id="df1" onclick="setDateFmt(1)">MAR 14</div>
         <div class="tab" id="df2" onclick="setDateFmt(2)">MARCH 14</div>
@@ -195,25 +167,23 @@ input[type=text]:focus{border-color:#4a8ad4}
       </div>
       <div id="dateOpts3" class="hidden">
         <div class="row">
-          <label><input type="checkbox" id="dateUS" onchange="toggleDateUS()"> US format (MM/DD)</label>
+          <label><input type="checkbox" id="dateUS" onchange="toggleDateUS()"> US (MM/DD)</label>
         </div>
         <div class="row">
-          <label><input type="checkbox" id="dateYr" onchange="toggleDateYr()"> Show year</label>
+          <label><input type="checkbox" id="dateYr" onchange="toggleDateYr()"> Year</label>
         </div>
       </div>
       <div class="row">
         <label><input type="checkbox" id="dateScroll" onchange="toggleDateScroll()"> Scroll</label>
         <span class="sub" id="dateScrollNote"></span>
       </div>
-      <button class="btn btn-big" style="background:#7b5e0f" onclick="send('date')">SHOW DATE</button>
+      <button class="btn btn-full" style="background:#7b5e0f" onclick="send('date')">DATE</button>
     </div>
-  </div>
 
-  <!-- ==================== EFFECTS PANEL ==================== -->
-  <div class="panel" id="panel-effects">
-    <div class="s">
-      <h2>Visual Effects</h2>
-      <div class="fx-grid">
+    <!-- EFFECTS -->
+    <div class="card">
+      <h2><span class="icon">&#10024;</span> Effects</h2>
+      <div class="btn-grid">
         <button class="btn" style="background:#5b2d8e" onclick="send('eyes')">SPOOKY EYES</button>
         <button class="btn" style="background:#8b1a2a" onclick="send('knightrider')">KNIGHT RIDER</button>
         <button class="btn" style="background:#b85c00" onclick="send('fireplace')">FIREPLACE</button>
@@ -221,84 +191,70 @@ input[type=text]:focus{border-color:#4a8ad4}
         <button class="btn" style="background:#1a1a5f" onclick="send('starfield')">STARFIELD</button>
         <button class="btn" style="background:#1db954" onclick="send('spotify')">SPOTIFY</button>
       </div>
+      <div style="height:6px"></div>
+      <button class="btn btn-full" style="background:#1a5f8b" onclick="send('flights')">FLIGHT TRACKER</button>
+      <div id="flightInfo" class="sub" style="display:none"></div>
     </div>
 
-    <div class="s">
-      <h2>Flight Tracker</h2>
-      <button class="btn btn-big" style="background:#1a5f8b" onclick="send('flights')">TRACK FLIGHTS</button>
-      <div id="flightInfo" class="sub" style="margin-top:6px;display:none"></div>
-    </div>
-  </div>
-
-  <!-- ==================== GAMES PANEL ==================== -->
-  <div class="panel" id="panel-games">
-    <div class="s">
-      <h2>Choose a Game</h2>
-      <div class="game-grid">
+    <!-- GAMES -->
+    <div class="card">
+      <h2><span class="icon">&#127918;</span> Games</h2>
+      <div class="btn-grid">
         <button class="btn" style="background:#8b1a1a" onclick="startGame('snake')">SNAKE</button>
         <button class="btn" style="background:#5b1a1a" onclick="startGame('snakeauto')">SNAKE AUTO</button>
         <button class="btn" style="background:#1a5fb4" onclick="startGame('breakout')">BREAKOUT</button>
         <button class="btn" style="background:#1a3b6b" onclick="startGame('breakoutauto')">BREAKOUT AUTO</button>
       </div>
-    </div>
-
-    <div class="s" id="game-section" style="display:none">
-      <h2>Controls</h2>
-      <div id="score"></div>
-      <div class="arrow-pad">
-        <div class="empty"></div>
-        <button class="btn" ontouchstart="e(event);send('up')" onclick="send('up')">&#9650;</button>
-        <div class="empty"></div>
-        <button class="btn" ontouchstart="e(event);send('left')" onclick="send('left')">&#9664;</button>
-        <button class="btn" ontouchstart="e(event);send('restart')" onclick="send('restart')">&#8635;</button>
-        <button class="btn" ontouchstart="e(event);send('right')" onclick="send('right')">&#9654;</button>
-        <div class="empty"></div>
-        <button class="btn" ontouchstart="e(event);send('down')" onclick="send('down')">&#9660;</button>
-        <div class="empty"></div>
+      <div id="game-section" style="display:none">
+        <div id="score"></div>
+        <div class="arrow-pad">
+          <div class="empty"></div>
+          <button class="btn" ontouchstart="e(event);send('up')" onclick="send('up')">&#9650;</button>
+          <div class="empty"></div>
+          <button class="btn" ontouchstart="e(event);send('left')" onclick="send('left')">&#9664;</button>
+          <button class="btn" ontouchstart="e(event);send('restart')" onclick="send('restart')">&#8635;</button>
+          <button class="btn" ontouchstart="e(event);send('right')" onclick="send('right')">&#9654;</button>
+          <div class="empty"></div>
+          <button class="btn" ontouchstart="e(event);send('down')" onclick="send('down')">&#9660;</button>
+          <div class="empty"></div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ==================== SETTINGS PANEL ==================== -->
-  <div class="panel" id="panel-settings">
-    <div class="s">
-      <h2>Brightness</h2>
+    <!-- SETTINGS -->
+    <div class="card">
+      <h2><span class="icon">&#9881;</span> Settings</h2>
       <div class="slider-row">
         <label>Dim</label>
         <input type="range" id="bright" min="0" max="15" value="4" oninput="sendBright(this.value)">
         <label>Bright</label>
         <span class="val" id="brightVal">4</span>
       </div>
-    </div>
-
-    <div class="s">
-      <h2>Scroll Speed</h2>
       <div class="slider-row">
         <label>Slow</label>
         <input type="range" id="speedSlider" min="1" max="10" value="5" oninput="sendSpeed(this.value)">
         <label>Fast</label>
         <span class="val" id="speedVal">5</span>
       </div>
+      <div style="height:6px"></div>
+      <button class="btn btn-sm" style="background:#3a2020" onclick="disconnect()">Disconnect</button>
     </div>
 
-    <div class="s">
+    <!-- LOG -->
+    <div class="card">
       <h2 style="cursor:pointer" onclick="document.getElementById('logPanel').classList.toggle('hidden')">
-        Activity Log &#9660;
+        <span class="icon">&#128220;</span> Activity Log &#9660;
       </h2>
       <div id="logPanel" class="hidden">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <div style="font-size:.8em;color:#5a8abf">HISTORY</div>
-          <button class="btn btn-pre" style="font-size:.7em;padding:4px 8px" onclick="document.getElementById('logList').innerHTML=''">Clear</button>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <div style="font-size:.7em;color:#5a8abf">HISTORY</div>
+          <button class="btn btn-sm" style="font-size:.65em;padding:3px 8px" onclick="document.getElementById('logList').innerHTML=''">Clear</button>
         </div>
-        <div id="logList" style="max-height:200px;overflow-y:auto;font-size:.75em;color:#6a8aaa;background:#0a1222;border-radius:6px;padding:8px"></div>
+        <div id="logList" style="max-height:150px;overflow-y:auto;font-size:.7em;color:#6a8aaa;background:#0a1222;border-radius:6px;padding:6px"></div>
       </div>
     </div>
 
-    <div class="disconnect-row">
-      <button class="btn" onclick="disconnect()">Disconnect</button>
-    </div>
-  </div>
-
+  </div><!-- /grid -->
 </div><!-- /controls -->
 
 <div class="conn-status" id="status">Not connected</div>
@@ -308,18 +264,6 @@ var client = null;
 var TOPIC_CMD = 'esp32/led/cmd';
 var TOPIC_STATUS = 'esp32/led/status';
 
-// Tab navigation
-function showPanel(name) {
-  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
-  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
-  document.getElementById('panel-' + name).classList.add('active');
-  // find the matching nav button
-  document.querySelectorAll('.nav-btn').forEach(function(b) {
-    if (b.textContent.trim().toLowerCase() === name) b.classList.add('active');
-  });
-}
-
-// Save/load config from localStorage
 function saveConfig() {
   localStorage.setItem('mqtt_config', JSON.stringify({
     host: document.getElementById('mqttHost').value,
@@ -338,7 +282,6 @@ function loadConfig() {
   } catch(e) {}
 }
 loadConfig();
-// Auto-connect if credentials are saved
 if (document.getElementById('mqttHost').value && document.getElementById('mqttUser').value && document.getElementById('mqttPass').value) {
   setTimeout(connectMQTT, 100);
 }
@@ -366,11 +309,9 @@ function connectMQTT() {
     document.getElementById('status').textContent = 'Connected';
     document.getElementById('connDot').className = 'dot dot-on';
     document.getElementById('configPanel').classList.add('hidden');
-    var ctrl = document.getElementById('controls');
-    ctrl.classList.remove('hidden');
-    ctrl.style.display = 'block';
+    document.getElementById('controls').classList.remove('hidden');
     client.subscribe(TOPIC_STATUS);
-    addLog('System', 'Connected to MQTT broker');
+    addLog('System', 'Connected');
   });
 
   client.on('error', function(err) {
@@ -379,7 +320,7 @@ function connectMQTT() {
   });
 
   client.on('close', function() {
-    document.getElementById('status').textContent = 'Disconnected — reconnecting...';
+    document.getElementById('status').textContent = 'Reconnecting...';
     document.getElementById('connDot').className = 'dot dot-off';
   });
 
@@ -387,35 +328,28 @@ function connectMQTT() {
     var d = message.toString();
     if (d.startsWith('display:')) {
       var parts = d.substring(8).split(':');
-      var mode = parts[0], content = parts.slice(1).join(':');
-      updateDisplay(mode, content);
+      updateDisplay(parts[0], parts.slice(1).join(':'));
     }
-    if (d.startsWith('params:')) {
-      addLog('System', 'Parameters: ' + d.substring(7));
-    }
+    if (d.startsWith('params:')) addLog('System', d.substring(7));
     if (d.startsWith('score:')) {
       document.getElementById('score').textContent = 'Score: ' + d.split(':')[1];
-      addLog('Game', 'Score: ' + d.split(':')[1]);
     }
     if (d.startsWith('gameover:')) {
       var sc = d.split(':')[1];
-      document.getElementById('score').textContent = 'Game Over! Score: ' + sc + ' — tap restart';
-      updateDisplay('Game', 'Game Over! Score: ' + sc);
+      document.getElementById('score').textContent = 'Game Over! ' + sc + ' pts';
+      updateDisplay('Game', 'Game Over! ' + sc);
     }
     if (d.startsWith('flight:')) {
       var fi = document.getElementById('flightInfo');
-      fi.style.display = 'block';
-      fi.textContent = d.substring(7);
+      fi.style.display = 'block'; fi.textContent = d.substring(7);
     }
-    if (d.startsWith('scrollstate:')) {
+    if (d.startsWith('scrollstate:'))
       document.getElementById('scrollChk').checked = d.split(':')[1] === '1';
-    }
     if (d.startsWith('datescrollstate:')) {
-      var parts = d.split(':');
-      var on = parts[1] === '1', forced = parts[2] === '1';
-      document.getElementById('dateScroll').checked = on;
-      document.getElementById('dateScroll').disabled = forced;
-      document.getElementById('dateScrollNote').textContent = forced ? '(required — text too wide)' : '';
+      var p = d.split(':');
+      document.getElementById('dateScroll').checked = p[1] === '1';
+      document.getElementById('dateScroll').disabled = p[2] === '1';
+      document.getElementById('dateScrollNote').textContent = p[2] === '1' ? '(forced)' : '';
     }
   });
 }
@@ -423,57 +357,36 @@ function connectMQTT() {
 function disconnect() {
   if (client) { client.end(); client = null; }
   document.getElementById('configPanel').classList.remove('hidden');
-  var ctrl = document.getElementById('controls');
-  ctrl.classList.add('hidden');
-  ctrl.style.display = 'none';
+  document.getElementById('controls').classList.add('hidden');
   document.getElementById('status').textContent = 'Disconnected';
-  document.getElementById('connDot').className = 'dot dot-off';
 }
 
-function send(msg) {
-  if (client && client.connected) client.publish(TOPIC_CMD, msg);
-}
-
+function send(msg) { if (client && client.connected) client.publish(TOPIC_CMD, msg); }
 function e(ev) { ev.preventDefault(); }
 var dateFmt = 1;
 
 function addLog(mode, content) {
-  var t = new Date().toLocaleTimeString();
   var el = document.getElementById('logList');
-  var entry = document.createElement('div');
-  entry.style.cssText = 'padding:3px 0;border-bottom:1px solid #1a2a44';
-  entry.innerHTML = '<span style="color:#4a6a8a">' + t + '</span> <span style="color:#7eb8ff">' + mode + '</span> ' + content;
-  el.insertBefore(entry, el.firstChild);
-  if (el.children.length > 100) el.removeChild(el.lastChild);
+  var d = document.createElement('div');
+  d.style.cssText = 'padding:2px 0;border-bottom:1px solid #1a2a44';
+  d.innerHTML = '<span style="color:#4a6a8a">' + new Date().toLocaleTimeString() + '</span> <span style="color:#7eb8ff">' + mode + '</span> ' + content;
+  el.insertBefore(d, el.firstChild);
+  if (el.children.length > 50) el.removeChild(el.lastChild);
 }
-
 function updateDisplay(mode, content) {
   document.getElementById('curMode').textContent = mode;
   document.getElementById('curContent').textContent = content;
   addLog(mode, content);
 }
-
 function sendText() {
   var v = document.getElementById('textIn').value;
-  if (v) {
-    send(document.getElementById('scrollChk').checked ? 'scrollon' : 'scrolloff');
-    send('text:' + v);
-  }
+  if (v) { send(document.getElementById('scrollChk').checked ? 'scrollon' : 'scrolloff'); send('text:' + v); }
 }
-function tp(t) {
-  document.getElementById('textIn').value = t;
-  send(document.getElementById('scrollChk').checked ? 'scrollon' : 'scrolloff');
-  send('text:' + t);
-}
+function tp(t) { document.getElementById('textIn').value = t; send(document.getElementById('scrollChk').checked ? 'scrollon' : 'scrolloff'); send('text:' + t); }
 function sendNum() { var v = document.getElementById('numIn').value; if (v) send('number:' + v); }
 function np(n) { document.getElementById('numIn').value = n; send('number:' + n); }
-function toggleScroll() {
-  var on = document.getElementById('scrollChk').checked;
-  send(on ? 'scrollon' : 'scrolloff');
-  var v = document.getElementById('textIn').value;
-  if (v) send('text:' + v);
-}
-function sendSpeed(v) { document.getElementById('speedVal').textContent = v; var ms = 220 - (v * 20); send('scrollspeed:' + ms); }
+function toggleScroll() { var on = document.getElementById('scrollChk').checked; send(on ? 'scrollon' : 'scrolloff'); var v = document.getElementById('textIn').value; if (v) send('text:' + v); }
+function sendSpeed(v) { document.getElementById('speedVal').textContent = v; send('scrollspeed:' + (220 - v * 20)); }
 function sendBright(v) { document.getElementById('brightVal').textContent = v; send('brightness:' + v); }
 function setDateFmt(f) {
   dateFmt = f;
@@ -490,7 +403,6 @@ function startGame(cmd) {
   document.getElementById('score').textContent = cmd.includes('auto') ? 'Autoplay' : 'Score: 0';
   send(cmd);
 }
-
 document.addEventListener('keydown', function(ev) {
   var m = {ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right'};
   if (m[ev.key]) { ev.preventDefault(); send(m[ev.key]); }
