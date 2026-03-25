@@ -11,32 +11,70 @@ body{background:#0a1628;color:#e0e6f0;font-family:-apple-system,BlinkMacSystemFo
   display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:16px}
 h1{font-size:1.3em;margin-bottom:4px;color:#7eb8ff;letter-spacing:1px}
 .subtitle{font-size:.7em;color:#4a6a8a;margin-bottom:14px}
-.s{background:#111d33;border-radius:12px;padding:14px;margin-bottom:12px;width:100%;max-width:400px}
-.s h2{font-size:.85em;color:#5a8abf;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+
+/* Main container */
+.main{width:100%;max-width:420px}
+
+/* Status bar */
+.status-bar{background:#111d33;border-radius:10px;padding:10px 14px;margin-bottom:12px;
+  display:flex;align-items:center;justify-content:space-between}
+.status-bar .dot{width:8px;height:8px;border-radius:50%;margin-right:8px;flex-shrink:0}
+.dot-on{background:#2ecc71;box-shadow:0 0 6px #2ecc71}.dot-off{background:#555}
+.status-bar .mode{font-size:.85em;color:#7eb8ff;font-weight:600}
+.status-bar .content{font-size:.75em;color:#8a9ab5;margin-left:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.status-left{display:flex;align-items:center;min-width:0;flex:1}
+
+/* Navigation tabs */
+.nav{display:flex;gap:3px;margin-bottom:12px;background:#0d1a2e;border-radius:10px;padding:3px;overflow-x:auto}
+.nav-btn{flex:1;padding:10px 6px;border-radius:8px;background:transparent;color:#5a7a9a;font-size:.72em;
+  cursor:pointer;border:none;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;
+  transition:all .15s}
+.nav-btn.active{background:#1a5fb4;color:#fff}
+.nav-btn:hover:not(.active){background:#1a2a44;color:#8ab}
+
+/* Panels */
+.panel{display:none}.panel.active{display:block}
+
+/* Cards */
+.s{background:#111d33;border-radius:12px;padding:14px;margin-bottom:10px}
+.s h2{font-size:.8em;color:#5a8abf;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+
+/* Inputs */
 input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #2a3a55;
   background:#0d1a2e;color:#e0e6f0;font-size:1em;outline:none;margin-bottom:6px}
 input[type=text]:focus{border-color:#4a8ad4}
+
+/* Buttons */
 .btn{display:inline-block;padding:10px 16px;border-radius:8px;border:none;font-size:.9em;
   cursor:pointer;font-weight:600;transition:all .15s;color:#fff;margin:3px;text-align:center}
 .btn:active{transform:scale(.96)}
 .btn-p{background:#1a5fb4}.btn-p:hover{background:#2670c8}
 .btn-big{width:100%;padding:14px;font-size:1.05em;margin:4px 0}
-.btn-time{background:#0f7b3d}.btn-time:hover{background:#12964a}
-.btn-date{background:#7b5e0f}.btn-date:hover{background:#96720f}
-.btn-snake{background:#8b1a1a}.btn-snake:hover{background:#a52222}
 .btn-pre{background:#2a3a55;padding:8px 12px;font-size:.85em}.btn-pre:hover{background:#3a4e70}
 .presets{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+
+/* Effect buttons grid */
+.fx-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.fx-grid .btn{width:100%;padding:12px 8px;font-size:.8em;margin:0;border-radius:10px}
+
+/* Sliders */
+.slider-row{display:flex;align-items:center;gap:8px;margin:6px 0}
+.slider-row label{font-size:.8em;color:#8a9ab5;min-width:40px}
+.slider-row input[type=range]{flex:1;accent-color:#4a8ad4;height:6px}
+.slider-row .val{font-size:.8em;color:#7eb8ff;min-width:30px;text-align:right}
+
+/* Checkboxes & rows */
 .row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.85em;color:#8a9ab5}
 .row label{display:flex;align-items:center;gap:5px;cursor:pointer}
 .row input[type=checkbox]{accent-color:#4a8ad4;width:16px;height:16px}
-.slider-row{display:flex;align-items:center;gap:8px;margin:6px 0}
-.slider-row label{font-size:.8em;color:#8a9ab5;min-width:50px}
-.slider-row input[type=range]{flex:1;accent-color:#4a8ad4;height:6px}
-.slider-row .val{font-size:.8em;color:#7eb8ff;min-width:30px;text-align:right}
+
+/* Date tabs */
 .tabs{display:flex;gap:4px;margin-bottom:8px}
 .tab{padding:8px 12px;border-radius:6px;background:#1a2a44;color:#6a8abf;font-size:.8em;
   cursor:pointer;border:1px solid transparent;font-weight:600}
 .tab.active{background:#1a5fb4;color:#fff;border-color:#2670c8}
+
+/* Game controls */
 .arrow-pad{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);
   gap:4px;justify-content:center;margin:10px auto}
 .arrow-pad .btn{width:60px;height:60px;font-size:1.5em;padding:0;display:flex;align-items:center;
@@ -45,22 +83,35 @@ input[type=text]:focus{border-color:#4a8ad4}
 .arrow-pad .btn:active{background:#3668a0}
 .empty{visibility:hidden}
 #score{font-size:1em;color:#7eb8ff;text-align:center;margin:6px 0;min-height:1.3em}
-.status{font-size:.75em;color:#4a6a8a;text-align:center;margin-top:8px}
+
+/* Game launcher buttons */
+.game-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.game-grid .btn{width:100%;margin:0;padding:12px 8px;font-size:.82em;border-radius:10px}
+
+/* Log */
 .sub{font-size:.75em;color:#5a7a9a;margin-top:4px}
 .hidden{display:none}
 
+/* Status footer */
+.conn-status{font-size:.7em;color:#4a6a8a;text-align:center;margin-top:10px}
+
 /* MQTT config panel */
-.config{background:#0d1a2e;border:1px solid #2a3a55;border-radius:12px;padding:14px;margin-bottom:12px;width:100%;max-width:400px}
+.config{background:#0d1a2e;border:1px solid #2a3a55;border-radius:12px;padding:14px;margin-bottom:12px;width:100%;max-width:420px}
 .config h2{font-size:.85em;color:#5a8abf;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
 .config input{width:100%;padding:8px;border-radius:6px;border:1px solid #2a3a55;
   background:#111d33;color:#e0e6f0;font-size:.85em;outline:none;margin-bottom:6px}
 .config input:focus{border-color:#4a8ad4}
 .config .hint{font-size:.7em;color:#4a6a8a;margin-bottom:4px}
+
+/* Settings disconnect */
+.disconnect-row{display:flex;justify-content:center;margin-top:10px}
+.disconnect-row .btn{background:#3a2020;font-size:.8em;padding:8px 20px}
+.disconnect-row .btn:hover{background:#5a2020}
 </style>
 </head>
 <body>
 <h1>LED Matrix Control</h1>
-<div class="subtitle">REMOTE (via MQTT)</div>
+<div class="subtitle">REMOTE</div>
 
 <!-- MQTT Connection Config -->
 <div class="config" id="configPanel">
@@ -73,148 +124,200 @@ input[type=text]:focus{border-color:#4a8ad4}
   <div class="hint" style="margin-top:6px">Settings are saved in your browser.</div>
 </div>
 
-<div id="controls" class="hidden" style="width:100%;display:flex;flex-direction:column;align-items:center">
+<div id="controls" class="hidden" style="width:100%;max-width:420px">
 
-<div class="s">
-  <h2>Brightness</h2>
-  <div class="slider-row">
-    <label>Dim</label>
-    <input type="range" id="bright" min="0" max="15" value="4" oninput="sendBright(this.value)">
-    <label>Bright</label>
-    <span class="val" id="brightVal">4</span>
-  </div>
-</div>
-
-<div class="s">
-  <h2>Scroll Speed</h2>
-  <div class="slider-row">
-    <label>Slow</label>
-    <input type="range" id="speedSlider" min="1" max="10" value="5" oninput="sendSpeed(this.value)">
-    <label>Fast</label>
-    <span class="val" id="speedVal">5</span>
-  </div>
-</div>
-
-<div class="s">
-  <h2>Display Text</h2>
-  <input type="text" id="textIn" placeholder="Type a word or phrase... (< = heart)" maxlength="40">
-  <button class="btn btn-p btn-big" onclick="sendText()">Send Text</button>
-  <div class="row">
-    <label><input type="checkbox" id="scrollChk" onchange="toggleScroll()"> Scroll</label>
-  </div>
-  <div class="presets">
-    <button class="btn btn-pre" onclick="tp('HELLO')">HELLO</button>
-    <button class="btn btn-pre" onclick="tp('ESP32')">ESP32</button>
-    <button class="btn btn-pre" onclick="tp('COOL')">COOL</button>
-    <button class="btn btn-pre" onclick="tp('HI THERE')">HI THERE</button>
-    <button class="btn btn-pre" onclick="tp('I < U')">I &hearts; U</button>
-    <button class="btn btn-pre" onclick="tp('~')">GHOST</button>
-    <button class="btn btn-pre" onclick="tp('~ ~ ~')">GHOSTS</button>
-  </div>
-</div>
-
-<div class="s">
-  <h2>Display Number</h2>
-  <input type="text" id="numIn" placeholder="Up to 4 digits" maxlength="4"
-    oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-  <button class="btn btn-p btn-big" onclick="sendNum()">Send Number</button>
-  <div class="presets">
-    <button class="btn btn-pre" onclick="np('42')">42</button>
-    <button class="btn btn-pre" onclick="np('1337')">1337</button>
-    <button class="btn btn-pre" onclick="np('2026')">2026</button>
-  </div>
-</div>
-
-<div class="s">
-  <h2>Time &amp; Date</h2>
-  <button class="btn btn-time btn-big" onclick="send('time')">TIME</button>
-  <button class="btn btn-time btn-big" style="background:#0f6b7b" onclick="send('timetemp')">TIME + MAX TEMP</button>
-  <div style="height:10px"></div>
-  <div class="sub" style="margin-bottom:6px">Date format:</div>
-  <div class="tabs">
-    <div class="tab active" id="df1" onclick="setDateFmt(1)">MAR 14</div>
-    <div class="tab" id="df2" onclick="setDateFmt(2)">MARCH 14</div>
-    <div class="tab" id="df3" onclick="setDateFmt(3)">03/14</div>
-  </div>
-  <div id="dateOpts3" class="hidden">
-    <div class="row">
-      <label><input type="checkbox" id="dateUS" onchange="toggleDateUS()"> US format (MM/DD)</label>
-    </div>
-    <div class="row">
-      <label><input type="checkbox" id="dateYr" onchange="toggleDateYr()"> Show year</label>
+  <!-- Live status bar -->
+  <div class="status-bar">
+    <div class="status-left">
+      <div class="dot dot-on" id="connDot"></div>
+      <span class="mode" id="curMode">--</span>
+      <span class="content" id="curContent"></span>
     </div>
   </div>
-  <div class="row">
-    <label><input type="checkbox" id="dateScroll" onchange="toggleDateScroll()"> Scroll</label>
-    <span class="sub" id="dateScrollNote"></span>
+
+  <!-- Navigation -->
+  <div class="nav">
+    <button class="nav-btn active" onclick="showPanel('display')">Display</button>
+    <button class="nav-btn" onclick="showPanel('clock')">Clock</button>
+    <button class="nav-btn" onclick="showPanel('effects')">Effects</button>
+    <button class="nav-btn" onclick="showPanel('games')">Games</button>
+    <button class="nav-btn" onclick="showPanel('settings')">Settings</button>
   </div>
-  <button class="btn btn-date btn-big" onclick="send('date')">DATE</button>
-</div>
 
-<div class="s">
-  <h2>Effects</h2>
-  <button class="btn btn-big" style="background:#5b2d8e" onclick="send('eyes')">SPOOKY EYES</button>
-  <button class="btn btn-big" style="background:#8b1a2a" onclick="send('knightrider')">KNIGHT RIDER</button>
-  <button class="btn btn-big" style="background:#b85c00" onclick="send('fireplace')">FIREPLACE</button>
-  <button class="btn btn-big" style="background:#0f6b4a" onclick="send('rain')">MATRIX RAIN</button>
-  <button class="btn btn-big" style="background:#1a5f8b" onclick="send('flights')">FLIGHT TRACKER</button>
-  <div id="flightInfo" class="sub" style="margin-top:6px;display:none"></div>
-  <button class="btn btn-big" style="background:#1a1a5f" onclick="send('starfield')">STARFIELD</button>
-  <button class="btn btn-big" style="background:#1db954" onclick="send('spotify')">SPOTIFY NOW PLAYING</button>
-</div>
-
-<div class="s">
-  <h2>Games</h2>
-  <button class="btn btn-snake btn-big" onclick="startGame('snake')">SNAKE</button>
-  <button class="btn btn-big" style="background:#5b1a1a" onclick="startGame('snakeauto')">SNAKE AUTOPLAY</button>
-  <button class="btn btn-big" style="background:#1a5fb4" onclick="startGame('breakout')">BREAKOUT</button>
-  <button class="btn btn-big" style="background:#1a3b6b" onclick="startGame('breakoutauto')">BREAKOUT AUTOPLAY</button>
-</div>
-
-<div class="s hidden" id="game-section">
-  <h2>Controls</h2>
-  <div id="score"></div>
-  <div class="arrow-pad">
-    <div class="empty"></div>
-    <button class="btn" ontouchstart="e(event);send('up')" onclick="send('up')">&#9650;</button>
-    <div class="empty"></div>
-    <button class="btn" ontouchstart="e(event);send('left')" onclick="send('left')">&#9664;</button>
-    <button class="btn" ontouchstart="e(event);send('restart')" onclick="send('restart')">&#8635;</button>
-    <button class="btn" ontouchstart="e(event);send('right')" onclick="send('right')">&#9654;</button>
-    <div class="empty"></div>
-    <button class="btn" ontouchstart="e(event);send('down')" onclick="send('down')">&#9660;</button>
-    <div class="empty"></div>
-  </div>
-</div>
-
-<div class="s">
-  <h2 style="cursor:pointer" onclick="document.getElementById('logPanel').classList.toggle('hidden')">
-    Display Status &amp; Log &#9660;
-  </h2>
-  <div style="background:#0d1a2e;border-radius:8px;padding:10px;margin-bottom:8px">
-    <div style="font-size:.8em;color:#5a8abf;margin-bottom:4px">CURRENTLY SHOWING</div>
-    <div id="curMode" style="font-size:1em;color:#7eb8ff;font-weight:600">--</div>
-    <div id="curContent" style="font-size:.85em;color:#8a9ab5;margin-top:2px">--</div>
-  </div>
-  <div id="logPanel">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <div style="font-size:.8em;color:#5a8abf">HISTORY</div>
-      <button class="btn btn-pre" style="font-size:.7em;padding:4px 8px" onclick="document.getElementById('logList').innerHTML=''">Clear</button>
+  <!-- ==================== DISPLAY PANEL ==================== -->
+  <div class="panel active" id="panel-display">
+    <div class="s">
+      <h2>Text</h2>
+      <input type="text" id="textIn" placeholder="Type a word or phrase... (< = heart)" maxlength="40">
+      <button class="btn btn-p btn-big" onclick="sendText()">Send Text</button>
+      <div class="row">
+        <label><input type="checkbox" id="scrollChk" onchange="toggleScroll()"> Scroll</label>
+      </div>
+      <div class="presets">
+        <button class="btn btn-pre" onclick="tp('HELLO')">HELLO</button>
+        <button class="btn btn-pre" onclick="tp('ESP32')">ESP32</button>
+        <button class="btn btn-pre" onclick="tp('COOL')">COOL</button>
+        <button class="btn btn-pre" onclick="tp('HI THERE')">HI THERE</button>
+        <button class="btn btn-pre" onclick="tp('I < U')">I &hearts; U</button>
+        <button class="btn btn-pre" onclick="tp('~')">GHOST</button>
+        <button class="btn btn-pre" onclick="tp('~ ~ ~')">GHOSTS</button>
+      </div>
     </div>
-    <div id="logList" style="max-height:200px;overflow-y:auto;font-size:.75em;color:#6a8aaa;background:#0a1222;border-radius:6px;padding:8px"></div>
-  </div>
-</div>
 
-<button class="btn" style="background:#2a3a55;margin-top:8px" onclick="disconnect()">Disconnect</button>
+    <div class="s">
+      <h2>Number</h2>
+      <input type="text" id="numIn" placeholder="Up to 4 digits" maxlength="4"
+        oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+      <button class="btn btn-p btn-big" onclick="sendNum()">Send Number</button>
+      <div class="presets">
+        <button class="btn btn-pre" onclick="np('42')">42</button>
+        <button class="btn btn-pre" onclick="np('1337')">1337</button>
+        <button class="btn btn-pre" onclick="np('2026')">2026</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CLOCK PANEL ==================== -->
+  <div class="panel" id="panel-clock">
+    <div class="s">
+      <h2>Time</h2>
+      <button class="btn btn-big" style="background:#0f7b3d" onclick="send('time')">SHOW TIME</button>
+      <button class="btn btn-big" style="background:#0f6b7b" onclick="send('timetemp')">TIME + MAX TEMP</button>
+    </div>
+
+    <div class="s">
+      <h2>Date</h2>
+      <div class="sub" style="margin-bottom:8px">Format:</div>
+      <div class="tabs">
+        <div class="tab active" id="df1" onclick="setDateFmt(1)">MAR 14</div>
+        <div class="tab" id="df2" onclick="setDateFmt(2)">MARCH 14</div>
+        <div class="tab" id="df3" onclick="setDateFmt(3)">03/14</div>
+      </div>
+      <div id="dateOpts3" class="hidden">
+        <div class="row">
+          <label><input type="checkbox" id="dateUS" onchange="toggleDateUS()"> US format (MM/DD)</label>
+        </div>
+        <div class="row">
+          <label><input type="checkbox" id="dateYr" onchange="toggleDateYr()"> Show year</label>
+        </div>
+      </div>
+      <div class="row">
+        <label><input type="checkbox" id="dateScroll" onchange="toggleDateScroll()"> Scroll</label>
+        <span class="sub" id="dateScrollNote"></span>
+      </div>
+      <button class="btn btn-big" style="background:#7b5e0f" onclick="send('date')">SHOW DATE</button>
+    </div>
+  </div>
+
+  <!-- ==================== EFFECTS PANEL ==================== -->
+  <div class="panel" id="panel-effects">
+    <div class="s">
+      <h2>Visual Effects</h2>
+      <div class="fx-grid">
+        <button class="btn" style="background:#5b2d8e" onclick="send('eyes')">SPOOKY EYES</button>
+        <button class="btn" style="background:#8b1a2a" onclick="send('knightrider')">KNIGHT RIDER</button>
+        <button class="btn" style="background:#b85c00" onclick="send('fireplace')">FIREPLACE</button>
+        <button class="btn" style="background:#0f6b4a" onclick="send('rain')">MATRIX RAIN</button>
+        <button class="btn" style="background:#1a1a5f" onclick="send('starfield')">STARFIELD</button>
+        <button class="btn" style="background:#1db954" onclick="send('spotify')">SPOTIFY</button>
+      </div>
+    </div>
+
+    <div class="s">
+      <h2>Flight Tracker</h2>
+      <button class="btn btn-big" style="background:#1a5f8b" onclick="send('flights')">TRACK FLIGHTS</button>
+      <div id="flightInfo" class="sub" style="margin-top:6px;display:none"></div>
+    </div>
+  </div>
+
+  <!-- ==================== GAMES PANEL ==================== -->
+  <div class="panel" id="panel-games">
+    <div class="s">
+      <h2>Choose a Game</h2>
+      <div class="game-grid">
+        <button class="btn" style="background:#8b1a1a" onclick="startGame('snake')">SNAKE</button>
+        <button class="btn" style="background:#5b1a1a" onclick="startGame('snakeauto')">SNAKE AUTO</button>
+        <button class="btn" style="background:#1a5fb4" onclick="startGame('breakout')">BREAKOUT</button>
+        <button class="btn" style="background:#1a3b6b" onclick="startGame('breakoutauto')">BREAKOUT AUTO</button>
+      </div>
+    </div>
+
+    <div class="s" id="game-section" style="display:none">
+      <h2>Controls</h2>
+      <div id="score"></div>
+      <div class="arrow-pad">
+        <div class="empty"></div>
+        <button class="btn" ontouchstart="e(event);send('up')" onclick="send('up')">&#9650;</button>
+        <div class="empty"></div>
+        <button class="btn" ontouchstart="e(event);send('left')" onclick="send('left')">&#9664;</button>
+        <button class="btn" ontouchstart="e(event);send('restart')" onclick="send('restart')">&#8635;</button>
+        <button class="btn" ontouchstart="e(event);send('right')" onclick="send('right')">&#9654;</button>
+        <div class="empty"></div>
+        <button class="btn" ontouchstart="e(event);send('down')" onclick="send('down')">&#9660;</button>
+        <div class="empty"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SETTINGS PANEL ==================== -->
+  <div class="panel" id="panel-settings">
+    <div class="s">
+      <h2>Brightness</h2>
+      <div class="slider-row">
+        <label>Dim</label>
+        <input type="range" id="bright" min="0" max="15" value="4" oninput="sendBright(this.value)">
+        <label>Bright</label>
+        <span class="val" id="brightVal">4</span>
+      </div>
+    </div>
+
+    <div class="s">
+      <h2>Scroll Speed</h2>
+      <div class="slider-row">
+        <label>Slow</label>
+        <input type="range" id="speedSlider" min="1" max="10" value="5" oninput="sendSpeed(this.value)">
+        <label>Fast</label>
+        <span class="val" id="speedVal">5</span>
+      </div>
+    </div>
+
+    <div class="s">
+      <h2 style="cursor:pointer" onclick="document.getElementById('logPanel').classList.toggle('hidden')">
+        Activity Log &#9660;
+      </h2>
+      <div id="logPanel" class="hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-size:.8em;color:#5a8abf">HISTORY</div>
+          <button class="btn btn-pre" style="font-size:.7em;padding:4px 8px" onclick="document.getElementById('logList').innerHTML=''">Clear</button>
+        </div>
+        <div id="logList" style="max-height:200px;overflow-y:auto;font-size:.75em;color:#6a8aaa;background:#0a1222;border-radius:6px;padding:8px"></div>
+      </div>
+    </div>
+
+    <div class="disconnect-row">
+      <button class="btn" onclick="disconnect()">Disconnect</button>
+    </div>
+  </div>
 
 </div><!-- /controls -->
 
-<div class="status" id="status">Not connected</div>
+<div class="conn-status" id="status">Not connected</div>
 
 <script>
 var client = null;
 var TOPIC_CMD = 'esp32/led/cmd';
 var TOPIC_STATUS = 'esp32/led/status';
+
+// Tab navigation
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('panel-' + name).classList.add('active');
+  // find the matching nav button
+  document.querySelectorAll('.nav-btn').forEach(function(b) {
+    if (b.textContent.trim().toLowerCase() === name) b.classList.add('active');
+  });
+}
 
 // Save/load config from localStorage
 function saveConfig() {
@@ -261,20 +364,23 @@ function connectMQTT() {
 
   client.on('connect', function() {
     document.getElementById('status').textContent = 'Connected';
+    document.getElementById('connDot').className = 'dot dot-on';
     document.getElementById('configPanel').classList.add('hidden');
     var ctrl = document.getElementById('controls');
     ctrl.classList.remove('hidden');
-    ctrl.style.display = 'flex';
+    ctrl.style.display = 'block';
     client.subscribe(TOPIC_STATUS);
     addLog('System', 'Connected to MQTT broker');
   });
 
   client.on('error', function(err) {
     document.getElementById('status').textContent = 'Error: ' + err.message;
+    document.getElementById('connDot').className = 'dot dot-off';
   });
 
   client.on('close', function() {
     document.getElementById('status').textContent = 'Disconnected — reconnecting...';
+    document.getElementById('connDot').className = 'dot dot-off';
   });
 
   client.on('message', function(topic, message) {
@@ -321,6 +427,7 @@ function disconnect() {
   ctrl.classList.add('hidden');
   ctrl.style.display = 'none';
   document.getElementById('status').textContent = 'Disconnected';
+  document.getElementById('connDot').className = 'dot dot-off';
 }
 
 function send(msg) {
@@ -379,7 +486,7 @@ function toggleDateUS() { send(document.getElementById('dateUS').checked ? 'date
 function toggleDateYr() { send(document.getElementById('dateYr').checked ? 'dateyearon' : 'dateyearoff'); }
 function toggleDateScroll() { send(document.getElementById('dateScroll').checked ? 'datescrollon' : 'datescrolloff'); }
 function startGame(cmd) {
-  document.getElementById('game-section').classList.remove('hidden');
+  document.getElementById('game-section').style.display = 'block';
   document.getElementById('score').textContent = cmd.includes('auto') ? 'Autoplay' : 'Score: 0';
   send(cmd);
 }
