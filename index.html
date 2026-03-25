@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>ESP32 LED Matrix — Remote</title>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a1628;color:#e0e6f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:16px}
+h1{font-size:1.3em;margin-bottom:4px;color:#7eb8ff;letter-spacing:1px}
+.subtitle{font-size:.7em;color:#4a6a8a;margin-bottom:14px}
+.s{background:#111d33;border-radius:12px;padding:14px;margin-bottom:12px;width:100%;max-width:400px}
+.s h2{font-size:.85em;color:#5a8abf;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+input[type=text]{width:100%;padding:10px;border-radius:8px;border:1px solid #2a3a55;
+  background:#0d1a2e;color:#e0e6f0;font-size:1em;outline:none;margin-bottom:6px}
+input[type=text]:focus{border-color:#4a8ad4}
+.btn{display:inline-block;padding:10px 16px;border-radius:8px;border:none;font-size:.9em;
+  cursor:pointer;font-weight:600;transition:all .15s;color:#fff;margin:3px;text-align:center}
+.btn:active{transform:scale(.96)}
+.btn-p{background:#1a5fb4}.btn-p:hover{background:#2670c8}
+.btn-big{width:100%;padding:14px;font-size:1.05em;margin:4px 0}
+.btn-time{background:#0f7b3d}.btn-time:hover{background:#12964a}
+.btn-date{background:#7b5e0f}.btn-date:hover{background:#96720f}
+.btn-snake{background:#8b1a1a}.btn-snake:hover{background:#a52222}
+.btn-pre{background:#2a3a55;padding:8px 12px;font-size:.85em}.btn-pre:hover{background:#3a4e70}
+.presets{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.85em;color:#8a9ab5}
+.row label{display:flex;align-items:center;gap:5px;cursor:pointer}
+.row input[type=checkbox]{accent-color:#4a8ad4;width:16px;height:16px}
+.slider-row{display:flex;align-items:center;gap:8px;margin:6px 0}
+.slider-row label{font-size:.8em;color:#8a9ab5;min-width:50px}
+.slider-row input[type=range]{flex:1;accent-color:#4a8ad4;height:6px}
+.slider-row .val{font-size:.8em;color:#7eb8ff;min-width:30px;text-align:right}
+.tabs{display:flex;gap:4px;margin-bottom:8px}
+.tab{padding:8px 12px;border-radius:6px;background:#1a2a44;color:#6a8abf;font-size:.8em;
+  cursor:pointer;border:1px solid transparent;font-weight:600}
+.tab.active{background:#1a5fb4;color:#fff;border-color:#2670c8}
+.arrow-pad{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(3,60px);
+  gap:4px;justify-content:center;margin:10px auto}
+.arrow-pad .btn{width:60px;height:60px;font-size:1.5em;padding:0;display:flex;align-items:center;
+  justify-content:center;background:#1a3355;border-radius:10px}
+.arrow-pad .btn:hover{background:#254a75}
+.arrow-pad .btn:active{background:#3668a0}
+.empty{visibility:hidden}
+#score{font-size:1em;color:#7eb8ff;text-align:center;margin:6px 0;min-height:1.3em}
+.status{font-size:.75em;color:#4a6a8a;text-align:center;margin-top:8px}
+.sub{font-size:.75em;color:#5a7a9a;margin-top:4px}
+.hidden{display:none}
+
+/* MQTT config panel */
+.config{background:#0d1a2e;border:1px solid #2a3a55;border-radius:12px;padding:14px;margin-bottom:12px;width:100%;max-width:400px}
+.config h2{font-size:.85em;color:#5a8abf;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.config input{width:100%;padding:8px;border-radius:6px;border:1px solid #2a3a55;
+  background:#111d33;color:#e0e6f0;font-size:.85em;outline:none;margin-bottom:6px}
+.config input:focus{border-color:#4a8ad4}
+.config .hint{font-size:.7em;color:#4a6a8a;margin-bottom:4px}
+</style>
+</head>
+<body>
+<h1>LED Matrix Control</h1>
+<div class="subtitle">REMOTE (via MQTT)</div>
+
+<!-- MQTT Connection Config -->
+<div class="config" id="configPanel">
+  <h2>MQTT Connection</h2>
+  <div class="hint">HiveMQ Cloud WebSocket URL (wss://)</div>
+  <input type="text" id="mqttHost" placeholder="e.g. abc123.s1.eu.hivemq.cloud" value="">
+  <input type="text" id="mqttUser" placeholder="Username">
+  <input type="text" id="mqttPass" placeholder="Password" type="password">
+  <button class="btn btn-p btn-big" onclick="connectMQTT()">Connect</button>
+  <div class="hint" style="margin-top:6px">Settings are saved in your browser.</div>
+</div>
+
+<div id="controls" class="hidden" style="width:100%;display:flex;flex-direction:column;align-items:center">
+
+<div class="s">
+  <h2>Brightness</h2>
+  <div class="slider-row">
+    <label>Dim</label>
+    <input type="range" id="bright" min="0" max="15" value="4" oninput="sendBright(this.value)">
+    <label>Bright</label>
+    <span class="val" id="brightVal">4</span>
+  </div>
+</div>
+
+<div class="s">
+  <h2>Scroll Speed</h2>
+  <div class="slider-row">
+    <label>Slow</label>
+    <input type="range" id="speedSlider" min="1" max="10" value="5" oninput="sendSpeed(this.value)">
+    <label>Fast</label>
+    <span class="val" id="speedVal">5</span>
+  </div>
+</div>
+
+<div class="s">
+  <h2>Display Text</h2>
+  <input type="text" id="textIn" placeholder="Type a word or phrase... (< = heart)" maxlength="40">
+  <button class="btn btn-p btn-big" onclick="sendText()">Send Text</button>
+  <div class="row">
+    <label><input type="checkbox" id="scrollChk" onchange="toggleScroll()"> Scroll</label>
+  </div>
+  <div class="presets">
+    <button class="btn btn-pre" onclick="tp('HELLO')">HELLO</button>
+    <button class="btn btn-pre" onclick="tp('ESP32')">ESP32</button>
+    <button class="btn btn-pre" onclick="tp('COOL')">COOL</button>
+    <button class="btn btn-pre" onclick="tp('HI THERE')">HI THERE</button>
+    <button class="btn btn-pre" onclick="tp('I < U')">I &hearts; U</button>
+    <button class="btn btn-pre" onclick="tp('~')">GHOST</button>
+    <button class="btn btn-pre" onclick="tp('~ ~ ~')">GHOSTS</button>
+  </div>
+</div>
+
+<div class="s">
+  <h2>Display Number</h2>
+  <input type="text" id="numIn" placeholder="Up to 4 digits" maxlength="4"
+    oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+  <button class="btn btn-p btn-big" onclick="sendNum()">Send Number</button>
+  <div class="presets">
+    <button class="btn btn-pre" onclick="np('42')">42</button>
+    <button class="btn btn-pre" onclick="np('1337')">1337</button>
+    <button class="btn btn-pre" onclick="np('2026')">2026</button>
+  </div>
+</div>
+
+<div class="s">
+  <h2>Time &amp; Date</h2>
+  <button class="btn btn-time btn-big" onclick="send('time')">TIME</button>
+  <button class="btn btn-time btn-big" style="background:#0f6b7b" onclick="send('timetemp')">TIME + MAX TEMP</button>
+  <div style="height:10px"></div>
+  <div class="sub" style="margin-bottom:6px">Date format:</div>
+  <div class="tabs">
+    <div class="tab active" id="df1" onclick="setDateFmt(1)">MAR 14</div>
+    <div class="tab" id="df2" onclick="setDateFmt(2)">MARCH 14</div>
+    <div class="tab" id="df3" onclick="setDateFmt(3)">03/14</div>
+  </div>
+  <div id="dateOpts3" class="hidden">
+    <div class="row">
+      <label><input type="checkbox" id="dateUS" onchange="toggleDateUS()"> US format (MM/DD)</label>
+    </div>
+    <div class="row">
+      <label><input type="checkbox" id="dateYr" onchange="toggleDateYr()"> Show year</label>
+    </div>
+  </div>
+  <div class="row">
+    <label><input type="checkbox" id="dateScroll" onchange="toggleDateScroll()"> Scroll</label>
+    <span class="sub" id="dateScrollNote"></span>
+  </div>
+  <button class="btn btn-date btn-big" onclick="send('date')">DATE</button>
+</div>
+
+<div class="s">
+  <h2>Effects</h2>
+  <button class="btn btn-big" style="background:#5b2d8e" onclick="send('eyes')">SPOOKY EYES</button>
+  <button class="btn btn-big" style="background:#8b1a2a" onclick="send('knightrider')">KNIGHT RIDER</button>
+  <button class="btn btn-big" style="background:#b85c00" onclick="send('fireplace')">FIREPLACE</button>
+  <button class="btn btn-big" style="background:#0f6b4a" onclick="send('rain')">MATRIX RAIN</button>
+  <button class="btn btn-big" style="background:#1a5f8b" onclick="send('flights')">FLIGHT TRACKER</button>
+  <div id="flightInfo" class="sub" style="margin-top:6px;display:none"></div>
+  <button class="btn btn-big" style="background:#1a1a5f" onclick="send('starfield')">STARFIELD</button>
+  <button class="btn btn-big" style="background:#1db954" onclick="send('spotify')">SPOTIFY NOW PLAYING</button>
+</div>
+
+<div class="s">
+  <h2>Games</h2>
+  <button class="btn btn-snake btn-big" onclick="startGame('snake')">SNAKE</button>
+  <button class="btn btn-big" style="background:#5b1a1a" onclick="startGame('snakeauto')">SNAKE AUTOPLAY</button>
+  <button class="btn btn-big" style="background:#1a5fb4" onclick="startGame('breakout')">BREAKOUT</button>
+  <button class="btn btn-big" style="background:#1a3b6b" onclick="startGame('breakoutauto')">BREAKOUT AUTOPLAY</button>
+</div>
+
+<div class="s hidden" id="game-section">
+  <h2>Controls</h2>
+  <div id="score"></div>
+  <div class="arrow-pad">
+    <div class="empty"></div>
+    <button class="btn" ontouchstart="e(event);send('up')" onclick="send('up')">&#9650;</button>
+    <div class="empty"></div>
+    <button class="btn" ontouchstart="e(event);send('left')" onclick="send('left')">&#9664;</button>
+    <button class="btn" ontouchstart="e(event);send('restart')" onclick="send('restart')">&#8635;</button>
+    <button class="btn" ontouchstart="e(event);send('right')" onclick="send('right')">&#9654;</button>
+    <div class="empty"></div>
+    <button class="btn" ontouchstart="e(event);send('down')" onclick="send('down')">&#9660;</button>
+    <div class="empty"></div>
+  </div>
+</div>
+
+<div class="s">
+  <h2 style="cursor:pointer" onclick="document.getElementById('logPanel').classList.toggle('hidden')">
+    Display Status &amp; Log &#9660;
+  </h2>
+  <div style="background:#0d1a2e;border-radius:8px;padding:10px;margin-bottom:8px">
+    <div style="font-size:.8em;color:#5a8abf;margin-bottom:4px">CURRENTLY SHOWING</div>
+    <div id="curMode" style="font-size:1em;color:#7eb8ff;font-weight:600">--</div>
+    <div id="curContent" style="font-size:.85em;color:#8a9ab5;margin-top:2px">--</div>
+  </div>
+  <div id="logPanel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="font-size:.8em;color:#5a8abf">HISTORY</div>
+      <button class="btn btn-pre" style="font-size:.7em;padding:4px 8px" onclick="document.getElementById('logList').innerHTML=''">Clear</button>
+    </div>
+    <div id="logList" style="max-height:200px;overflow-y:auto;font-size:.75em;color:#6a8aaa;background:#0a1222;border-radius:6px;padding:8px"></div>
+  </div>
+</div>
+
+<button class="btn" style="background:#2a3a55;margin-top:8px" onclick="disconnect()">Disconnect</button>
+
+</div><!-- /controls -->
+
+<div class="status" id="status">Not connected</div>
+
+<script>
+var client = null;
+var TOPIC_CMD = 'esp32/led/cmd';
+var TOPIC_STATUS = 'esp32/led/status';
+
+// Save/load config from localStorage
+function saveConfig() {
+  localStorage.setItem('mqtt_config', JSON.stringify({
+    host: document.getElementById('mqttHost').value,
+    user: document.getElementById('mqttUser').value,
+    pass: document.getElementById('mqttPass').value
+  }));
+}
+function loadConfig() {
+  try {
+    var c = JSON.parse(localStorage.getItem('mqtt_config'));
+    if (c) {
+      document.getElementById('mqttHost').value = c.host || '';
+      document.getElementById('mqttUser').value = c.user || '';
+      document.getElementById('mqttPass').value = c.pass || '';
+    }
+  } catch(e) {}
+}
+loadConfig();
+
+function connectMQTT() {
+  var host = document.getElementById('mqttHost').value.trim();
+  var user = document.getElementById('mqttUser').value.trim();
+  var pass = document.getElementById('mqttPass').value.trim();
+  if (!host || !user || !pass) { alert('Please fill in all MQTT fields'); return; }
+
+  saveConfig();
+  document.getElementById('status').textContent = 'Connecting...';
+
+  var url = 'wss://' + host + ':8884/mqtt';
+  client = mqtt.connect(url, {
+    username: user,
+    password: pass,
+    clientId: 'web-' + Math.random().toString(16).substr(2, 8),
+    protocolVersion: 5,
+    clean: true,
+    reconnectPeriod: 3000
+  });
+
+  client.on('connect', function() {
+    document.getElementById('status').textContent = 'Connected';
+    document.getElementById('configPanel').classList.add('hidden');
+    var ctrl = document.getElementById('controls');
+    ctrl.classList.remove('hidden');
+    ctrl.style.display = 'flex';
+    client.subscribe(TOPIC_STATUS);
+    addLog('System', 'Connected to MQTT broker');
+  });
+
+  client.on('error', function(err) {
+    document.getElementById('status').textContent = 'Error: ' + err.message;
+  });
+
+  client.on('close', function() {
+    document.getElementById('status').textContent = 'Disconnected — reconnecting...';
+  });
+
+  client.on('message', function(topic, message) {
+    var d = message.toString();
+    if (d.startsWith('display:')) {
+      var parts = d.substring(8).split(':');
+      var mode = parts[0], content = parts.slice(1).join(':');
+      updateDisplay(mode, content);
+    }
+    if (d.startsWith('params:')) {
+      addLog('System', 'Parameters: ' + d.substring(7));
+    }
+    if (d.startsWith('score:')) {
+      document.getElementById('score').textContent = 'Score: ' + d.split(':')[1];
+      addLog('Game', 'Score: ' + d.split(':')[1]);
+    }
+    if (d.startsWith('gameover:')) {
+      var sc = d.split(':')[1];
+      document.getElementById('score').textContent = 'Game Over! Score: ' + sc + ' — tap restart';
+      updateDisplay('Game', 'Game Over! Score: ' + sc);
+    }
+    if (d.startsWith('flight:')) {
+      var fi = document.getElementById('flightInfo');
+      fi.style.display = 'block';
+      fi.textContent = d.substring(7);
+    }
+    if (d.startsWith('scrollstate:')) {
+      document.getElementById('scrollChk').checked = d.split(':')[1] === '1';
+    }
+    if (d.startsWith('datescrollstate:')) {
+      var parts = d.split(':');
+      var on = parts[1] === '1', forced = parts[2] === '1';
+      document.getElementById('dateScroll').checked = on;
+      document.getElementById('dateScroll').disabled = forced;
+      document.getElementById('dateScrollNote').textContent = forced ? '(required — text too wide)' : '';
+    }
+  });
+}
+
+function disconnect() {
+  if (client) { client.end(); client = null; }
+  document.getElementById('configPanel').classList.remove('hidden');
+  var ctrl = document.getElementById('controls');
+  ctrl.classList.add('hidden');
+  ctrl.style.display = 'none';
+  document.getElementById('status').textContent = 'Disconnected';
+}
+
+function send(msg) {
+  if (client && client.connected) client.publish(TOPIC_CMD, msg);
+}
+
+function e(ev) { ev.preventDefault(); }
+var dateFmt = 1;
+
+function addLog(mode, content) {
+  var t = new Date().toLocaleTimeString();
+  var el = document.getElementById('logList');
+  var entry = document.createElement('div');
+  entry.style.cssText = 'padding:3px 0;border-bottom:1px solid #1a2a44';
+  entry.innerHTML = '<span style="color:#4a6a8a">' + t + '</span> <span style="color:#7eb8ff">' + mode + '</span> ' + content;
+  el.insertBefore(entry, el.firstChild);
+  if (el.children.length > 100) el.removeChild(el.lastChild);
+}
+
+function updateDisplay(mode, content) {
+  document.getElementById('curMode').textContent = mode;
+  document.getElementById('curContent').textContent = content;
+  addLog(mode, content);
+}
+
+function sendText() {
+  var v = document.getElementById('textIn').value;
+  if (v) {
+    send(document.getElementById('scrollChk').checked ? 'scrollon' : 'scrolloff');
+    send('text:' + v);
+  }
+}
+function tp(t) {
+  document.getElementById('textIn').value = t;
+  send(document.getElementById('scrollChk').checked ? 'scrollon' : 'scrolloff');
+  send('text:' + t);
+}
+function sendNum() { var v = document.getElementById('numIn').value; if (v) send('number:' + v); }
+function np(n) { document.getElementById('numIn').value = n; send('number:' + n); }
+function toggleScroll() {
+  var on = document.getElementById('scrollChk').checked;
+  send(on ? 'scrollon' : 'scrolloff');
+  var v = document.getElementById('textIn').value;
+  if (v) send('text:' + v);
+}
+function sendSpeed(v) { document.getElementById('speedVal').textContent = v; var ms = 220 - (v * 20); send('scrollspeed:' + ms); }
+function sendBright(v) { document.getElementById('brightVal').textContent = v; send('brightness:' + v); }
+function setDateFmt(f) {
+  dateFmt = f;
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('df' + f).classList.add('active');
+  document.getElementById('dateOpts3').classList.toggle('hidden', f !== 3);
+  send('datefmt:' + f);
+}
+function toggleDateUS() { send(document.getElementById('dateUS').checked ? 'dateus' : 'dateeu'); }
+function toggleDateYr() { send(document.getElementById('dateYr').checked ? 'dateyearon' : 'dateyearoff'); }
+function toggleDateScroll() { send(document.getElementById('dateScroll').checked ? 'datescrollon' : 'datescrolloff'); }
+function startGame(cmd) {
+  document.getElementById('game-section').classList.remove('hidden');
+  document.getElementById('score').textContent = cmd.includes('auto') ? 'Autoplay' : 'Score: 0';
+  send(cmd);
+}
+
+document.addEventListener('keydown', function(ev) {
+  var m = {ArrowUp:'up', ArrowDown:'down', ArrowLeft:'left', ArrowRight:'right'};
+  if (m[ev.key]) { ev.preventDefault(); send(m[ev.key]); }
+});
+document.getElementById('textIn').addEventListener('keydown', function(ev) { if (ev.key === 'Enter') sendText(); });
+document.getElementById('numIn').addEventListener('keydown', function(ev) { if (ev.key === 'Enter') sendNum(); });
+</script>
+</body>
+</html>
