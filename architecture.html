@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ESP32 LED Matrix — Architecture</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a1628;color:#e0e6f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  min-height:100vh;padding:40px 20px;display:flex;flex-direction:column;align-items:center}
+h1{font-size:1.6em;color:#7eb8ff;letter-spacing:1px;margin-bottom:6px}
+.subtitle{font-size:.8em;color:#5a7a9a;margin-bottom:40px}
+
+/* Diagram container */
+.diagram{position:relative;width:100%;max-width:900px;min-height:520px}
+
+/* Nodes */
+.node{position:absolute;border-radius:14px;padding:16px 20px;text-align:center;
+  border:2px solid;transition:all .2s}
+.node h3{font-size:.9em;margin-bottom:4px;letter-spacing:.5px}
+.node .desc{font-size:.7em;opacity:.7;line-height:1.3}
+.node .icon{font-size:2em;margin-bottom:6px;display:block}
+
+/* Node types */
+.n-browser{background:#111d33;border-color:#1a5fb4;left:0;top:60px;width:200px}
+.n-github{background:#111d33;border-color:#6e40c9;left:50%;transform:translateX(-50%);top:0;width:220px}
+.n-hivemq{background:#111d33;border-color:#e8a025;left:50%;transform:translateX(-50%);top:200px;width:240px}
+.n-esp{background:#111d33;border-color:#e74c3c;right:0;top:60px;width:200px}
+.n-display{background:#1a0a0a;border-color:#e74c3c;right:0;top:340px;width:200px}
+.n-wifi{background:#111d33;border-color:#2ecc71;right:60px;top:210px;width:130px}
+
+/* Arrow labels */
+.arrow-label{position:absolute;font-size:.65em;color:#8a9ab5;text-align:center;line-height:1.4;
+  background:#0a1628;padding:2px 8px;border-radius:4px;white-space:nowrap}
+
+/* SVG arrows */
+svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.arrow{fill:none;stroke-width:2;marker-end:url(#arrowhead)}
+.arrow-blue{stroke:#1a5fb4}.arrow-purple{stroke:#6e40c9}.arrow-yellow{stroke:#e8a025}
+.arrow-red{stroke:#e74c3c}.arrow-green{stroke:#2ecc71}
+.arrow-dashed{stroke-dasharray:6,4}
+
+/* Legend */
+.legend{margin-top:40px;max-width:900px;width:100%}
+.legend h2{font-size:.9em;color:#5a8abf;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.legend-grid{grid-template-columns:1fr}}
+.leg-item{background:#111d33;border-radius:8px;padding:10px 14px;display:flex;align-items:flex-start;gap:10px}
+.leg-num{background:#1a5fb4;color:#fff;width:24px;height:24px;border-radius:50%;display:flex;
+  align-items:center;justify-content:center;font-size:.75em;font-weight:700;flex-shrink:0}
+.leg-text{font-size:.75em;line-height:1.5;color:#b0c0d8}
+.leg-text strong{color:#7eb8ff}
+
+/* Responsive */
+@media(max-width:700px){
+  .diagram{min-height:900px}
+  .n-browser{left:50%;transform:translateX(-50%);top:0;width:80%}
+  .n-github{top:140px;width:80%}
+  .n-hivemq{top:310px;width:80%}
+  .n-esp{right:auto;left:50%;transform:translateX(-50%);top:500px;width:80%}
+  .n-wifi{right:auto;left:50%;transform:translateX(-50%);top:650px;width:80%}
+  .n-display{right:auto;left:50%;transform:translateX(-50%);top:760px;width:80%}
+  svg{display:none}
+  .arrow-label{display:none}
+}
+</style>
+</head>
+<body>
+
+<h1>System Architecture</h1>
+<div class="subtitle">ESP32 LED Matrix — Remote Control via MQTT</div>
+
+<div class="diagram">
+  <svg viewBox="0 0 900 520" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+        <polygon points="0 0, 10 3.5, 0 7" fill="#8a9ab5"/>
+      </marker>
+    </defs>
+
+    <!-- 1. Browser → GitHub Pages (serve web app) -->
+    <path class="arrow arrow-purple" d="M 140 60 Q 200 -10 340 30"/>
+
+    <!-- 2. GitHub Pages → Browser (returns HTML/JS) -->
+    <path class="arrow arrow-purple arrow-dashed" d="M 340 50 Q 200 20 160 60"/>
+
+    <!-- 3. Browser → HiveMQ (commands via WSS) -->
+    <path class="arrow arrow-yellow" d="M 160 160 Q 250 200 350 230"/>
+
+    <!-- 4. HiveMQ → Browser (status via WSS) -->
+    <path class="arrow arrow-yellow arrow-dashed" d="M 350 250 Q 250 230 160 170"/>
+
+    <!-- 5. HiveMQ → ESP32 (commands via TLS) -->
+    <path class="arrow arrow-yellow" d="M 560 230 Q 650 200 700 160"/>
+
+    <!-- 6. ESP32 → HiveMQ (status + pixels via TLS) -->
+    <path class="arrow arrow-yellow arrow-dashed" d="M 700 170 Q 650 230 560 250"/>
+
+    <!-- 7. ESP32 → WiFi → Display -->
+    <path class="arrow arrow-red" d="M 780 160 L 780 340"/>
+  </svg>
+
+  <!-- Nodes -->
+  <div class="node n-browser">
+    <span class="icon">&#127760;</span>
+    <h3>Browser</h3>
+    <div class="desc">Any device, anywhere in the world</div>
+  </div>
+
+  <div class="node n-github">
+    <span class="icon">&#128230;</span>
+    <h3>GitHub Pages</h3>
+    <div class="desc">Hosts the web app (index.html)<br>tobiaswessels-lab.github.io</div>
+  </div>
+
+  <div class="node n-hivemq">
+    <span class="icon">&#128233;</span>
+    <h3>HiveMQ Cloud (MQTT Broker)</h3>
+    <div class="desc">Free tier — relays commands &amp; status<br>Topics: esp32/led/cmd &amp; esp32/led/status</div>
+  </div>
+
+  <div class="node n-esp">
+    <span class="icon">&#128308;</span>
+    <h3>ESP32</h3>
+    <div class="desc">At home — WiFi connected<br>192.168.86.35</div>
+  </div>
+
+  <div class="node n-display">
+    <span class="icon" style="color:#e74c3c">&#9608;&#9608;&#9608;&#9608;</span>
+    <h3>MAX7219 LED Matrix</h3>
+    <div class="desc">32×8 red LED display<br>SPI: GPIO 25/26/27</div>
+  </div>
+
+  <!-- Arrow labels -->
+  <div class="arrow-label" style="left:190px;top:10px">&#9312; GET index.html</div>
+  <div class="arrow-label" style="left:140px;top:185px">&#9313; Commands<br><em>wss:8884</em></div>
+  <div class="arrow-label" style="left:310px;top:265px">&#9314; Status + Pixels<br><em>wss:8884</em></div>
+  <div class="arrow-label" style="right:190px;top:185px">&#9315; Commands<br><em>tls:8883</em></div>
+  <div class="arrow-label" style="right:140px;top:265px">&#9316; Status + Pixels<br><em>tls:8883</em></div>
+  <div class="arrow-label" style="right:20px;top:260px">&#9317; SPI data</div>
+</div>
+
+<!-- Legend / Step-by-step -->
+<div class="legend">
+  <h2>How it works — step by step</h2>
+  <div class="legend-grid">
+    <div class="leg-item">
+      <div class="leg-num">1</div>
+      <div class="leg-text"><strong>User opens the web app</strong> — Browser loads <code>index.html</code> from GitHub Pages. This is a static file with HTML, CSS, and JavaScript. No server-side code.</div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-num">2</div>
+      <div class="leg-text"><strong>Web app connects to MQTT broker</strong> — JavaScript uses <code>mqtt.js</code> library to open a WebSocket connection (<code>wss://</code> port 8884) to HiveMQ Cloud. Authenticated with username + password.</div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-num">3</div>
+      <div class="leg-text"><strong>User taps a button</strong> — The web app publishes a command (e.g. <code>text:HELLO</code>) to MQTT topic <code>esp32/led/cmd</code>.</div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-num">4</div>
+      <div class="leg-text"><strong>HiveMQ relays to ESP32</strong> — The broker forwards the message to all subscribers of <code>esp32/led/cmd</code>. The ESP32 is subscribed via TLS on port 8883.</div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-num">5</div>
+      <div class="leg-text"><strong>ESP32 executes the command</strong> — The <code>handleCommand()</code> function processes the message (same handler as the local WebSocket) and updates the LED matrix via SPI.</div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-num">6</div>
+      <div class="leg-text"><strong>ESP32 sends status back</strong> — Publishes display status and live pixel data (32 bytes as hex) to <code>esp32/led/status</code>. HiveMQ relays it to all connected browsers.</div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-num">7</div>
+      <div class="leg-text"><strong>Browser renders live preview</strong> — The web app decodes the pixel data and draws a red LED matrix on a canvas, matching the physical display including brightness level.</div>
+    </div>
+    <div class="leg-item">
+      <div class="leg-num" style="background:#2ecc71">&#10003;</div>
+      <div class="leg-text"><strong>No port forwarding needed</strong> — Both the browser and ESP32 connect <em>outbound</em> to HiveMQ. The home router doesn't need any configuration. All connections are encrypted (TLS/WSS).</div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:30px;text-align:center">
+  <div style="font-size:.7em;color:#3a4a6a;margin-bottom:8px">PROTOCOLS</div>
+  <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+    <div style="font-size:.72em;color:#6e40c9">&#9632; HTTPS — GitHub Pages</div>
+    <div style="font-size:.72em;color:#e8a025">&#9632; MQTT over WSS/TLS — HiveMQ</div>
+    <div style="font-size:.72em;color:#e74c3c">&#9632; SPI — LED Matrix</div>
+  </div>
+  <div style="font-size:.6em;color:#2a3a55;margin-top:20px">All connections encrypted. Free tier: HiveMQ Cloud + GitHub Pages.</div>
+</div>
+
+</body>
+</html>
